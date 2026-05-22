@@ -10,7 +10,7 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Path, Polyline } from "react-native-svg";
+import Svg, { Line, Path, Polyline } from "react-native-svg";
 import { C, MENU_CATEGORIES } from "../../data/discoveryData";
 
 const { width, height } = Dimensions.get("window");
@@ -53,6 +53,16 @@ function PinIcon() {
   );
 }
 
+function PlusIcon() {
+  return (
+    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none"
+      stroke={C.white} strokeWidth={2.5} strokeLinecap="round">
+      <Line x1="12" y1="5" x2="12" y2="19" />
+      <Line x1="5" y1="12" x2="19" y2="12" />
+    </Svg>
+  );
+}
+
 function ReviewCard({ review }) {
   return (
     <View style={styles.reviewCard}>
@@ -73,18 +83,41 @@ function ReviewCard({ review }) {
   );
 }
 
-function DishPreviewCard({ dish }) {
+// ─── Menu item card with add/remove qty controls ──────────────────────────────
+function MenuItemCard({ dish, qty, onAdd, onRemove }) {
   return (
-    <View style={styles.dishCard}>
-      <Image source={{ uri: dish.image }} style={styles.dishImage} resizeMode="cover" />
-      <LinearGradient
-        colors={["transparent", "rgba(18,13,10,0.95)"]}
-        style={styles.dishGradient}
-      />
-      <View style={styles.dishInfo}>
-        <Text style={styles.dishName}>{dish.name}</Text>
-        <Text style={styles.dishDesc} numberOfLines={1}>{dish.desc}</Text>
-        <Text style={styles.dishPrice}>{dish.price}</Text>
+    <View style={styles.menuItem}>
+      {/* Left: info */}
+      <View style={styles.menuItemInfo}>
+        <Text style={styles.menuItemName}>{dish.name}</Text>
+        <Text style={styles.menuItemDesc} numberOfLines={2}>{dish.desc}</Text>
+        <Text style={styles.menuItemPrice}>{dish.price}</Text>
+      </View>
+
+      {/* Right: image with + overlaid on bottom-right corner */}
+      <View style={styles.menuItemRight}>
+        <View style={styles.menuItemImageWrap}>
+          <Image
+            source={{ uri: dish.image }}
+            style={styles.menuItemImage}
+            resizeMode="cover"
+          />
+          {qty === 0 ? (
+            <Pressable style={styles.addBtn} onPress={onAdd}>
+              <PlusIcon />
+            </Pressable>
+          ) : (
+            <View style={styles.qtyControl}>
+              <Pressable style={styles.qtyBtn} onPress={onRemove}>
+                <Text style={styles.qtyBtnText}>−</Text>
+              </Pressable>
+              <Text style={styles.qtyText}>{qty}</Text>
+              <Pressable style={styles.qtyBtn} onPress={onAdd}>
+                <Text style={styles.qtyBtnText}>+</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -94,6 +127,28 @@ export default function RestaurantDetail({ route, navigation }) {
   const { restaurant } = route.params;
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState("Recommended");
+
+  // Cart state: { [dishId]: qty }
+  const [cart, setCart] = useState({});
+
+  const addToCart = (dishId) =>
+    setCart((prev) => ({ ...prev, [dishId]: (prev[dishId] || 0) + 1 }));
+
+  const removeFromCart = (dishId) =>
+    setCart((prev) => {
+      const next = { ...prev, [dishId]: (prev[dishId] || 1) - 1 };
+      if (next[dishId] <= 0) delete next[dishId];
+      return next;
+    });
+
+  const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
+
+  // Parse price string like "₹349" → 349
+  const parsePrice = (str) => parseInt(str.replace(/[^\d]/g, ""), 10) || 0;
+
+  const cartTotal = restaurant.menu.reduce((sum, dish) => {
+    return sum + parsePrice(dish.price) * (cart[dish.id] || 0);
+  }, 0);
 
   return (
     <View style={styles.root}>
@@ -107,7 +162,6 @@ export default function RestaurantDetail({ route, navigation }) {
             style={styles.heroGradient}
           />
 
-          {/* Back button */}
           <Pressable
             style={[styles.backBtn, { top: insets.top + 12 }]}
             onPress={() => navigation.goBack()}
@@ -115,7 +169,6 @@ export default function RestaurantDetail({ route, navigation }) {
             <BackIcon />
           </Pressable>
 
-          {/* Hero info */}
           <View style={styles.heroInfo}>
             <Text style={styles.heroName}>{restaurant.name}</Text>
             <Text style={styles.heroCuisines}>{restaurant.cuisines}</Text>
@@ -136,13 +189,13 @@ export default function RestaurantDetail({ route, navigation }) {
 
         {/* ── Body ── */}
         <View style={styles.body}>
-          {/* Description */}
+          {/* About */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>About</Text>
             <Text style={styles.description}>{restaurant.description}</Text>
           </View>
 
-          {/* Menu preview */}
+          {/* Menu */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Popular Dishes</Text>
 
@@ -165,10 +218,16 @@ export default function RestaurantDetail({ route, navigation }) {
               ))}
             </ScrollView>
 
-            {/* Dish cards */}
-            <View style={styles.dishGrid}>
+            {/* Menu item cards */}
+            <View style={styles.menuList}>
               {restaurant.menu.map((dish) => (
-                <DishPreviewCard key={dish.id} dish={dish} />
+                <MenuItemCard
+                  key={dish.id}
+                  dish={dish}
+                  qty={cart[dish.id] || 0}
+                  onAdd={() => addToCart(dish.id)}
+                  onRemove={() => removeFromCart(dish.id)}
+                />
               ))}
             </View>
           </View>
@@ -184,11 +243,10 @@ export default function RestaurantDetail({ route, navigation }) {
           </View>
         </View>
 
-        {/* Bottom padding for CTA */}
-        <View style={{ height: 100 + insets.bottom }} />
+        <View style={{ height: 110 + insets.bottom }} />
       </ScrollView>
 
-      {/* ── Sticky CTA ── */}
+      {/* ── Sticky CTA — shows cart summary when items added ── */}
       <View style={[styles.ctaBar, { paddingBottom: insets.bottom + 12 }]}>
         <Pressable
           style={styles.ctaBtn}
@@ -200,7 +258,17 @@ export default function RestaurantDetail({ route, navigation }) {
             end={{ x: 1, y: 0 }}
             style={styles.ctaGradient}
           >
-            <Text style={styles.ctaLabel}>View Full Menu</Text>
+            {cartCount > 0 ? (
+              <>
+                <View style={styles.ctaBadge}>
+                  <Text style={styles.ctaBadgeText}>{cartCount}</Text>
+                </View>
+                <Text style={styles.ctaLabel}>View Cart</Text>
+                <Text style={styles.ctaPrice}>₹{cartTotal}</Text>
+              </>
+            ) : (
+              <Text style={styles.ctaLabel}>View Full Menu</Text>
+            )}
           </LinearGradient>
         </Pressable>
       </View>
@@ -383,52 +451,98 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Dish grid
-  dishGrid: {
-    gap: 12,
+  // Menu items
+  menuList: {
+    gap: 0,
   },
-  dishCard: {
-    height: 140,
-    borderRadius: 18,
-    overflow: "hidden",
-    backgroundColor: C.card,
-    borderWidth: 1,
-    borderColor: C.border,
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+    gap: 14,
   },
-  dishImage: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
+  menuItemInfo: {
+    flex: 1,
+    gap: 5,
   },
-  dishGradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: "65%",
-  },
-  dishInfo: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 14,
-    gap: 2,
-  },
-  dishName: {
+  menuItemName: {
     fontSize: 15,
     fontWeight: "700",
     color: C.white,
+    letterSpacing: 0.1,
   },
-  dishDesc: {
-    fontSize: 12,
+  menuItemDesc: {
+    fontSize: 12.5,
     color: C.secondary,
+    lineHeight: 18,
   },
-  dishPrice: {
-    fontSize: 13,
+  menuItemPrice: {
+    fontSize: 14,
     fontWeight: "600",
     color: C.orange,
     marginTop: 2,
+  },
+  menuItemRight: {
+    alignItems: "center",
+  },
+  menuItemImageWrap: {
+    width: 90,
+    height: 80,
+    position: "relative",
+  },
+  menuItemImage: {
+    width: 90,
+    height: 80,
+    borderRadius: 14,
+    backgroundColor: C.card,
+  },
+  addBtn: {
+    position: "absolute",
+    bottom: -10,
+    right: -10,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: C.orange,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: C.orange,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  qtyControl: {
+    position: "absolute",
+    bottom: -14,
+    right: -14,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: C.card,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,159,45,0.3)",
+    overflow: "hidden",
+  },
+  qtyBtn: {
+    width: 30,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  qtyBtnText: {
+    fontSize: 16,
+    color: C.orange,
+    fontWeight: "700",
+  },
+  qtyText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: C.white,
+    minWidth: 20,
+    textAlign: "center",
   },
 
   // CTA
@@ -454,14 +568,37 @@ const styles = StyleSheet.create({
   },
   ctaGradient: {
     height: 54,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 28,
+    gap: 10,
+    paddingHorizontal: 20,
   },
   ctaLabel: {
     fontSize: 16,
     fontWeight: "700",
     color: C.white,
     letterSpacing: 0.4,
+    flex: 1,
+    textAlign: "center",
+  },
+  ctaBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.25)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ctaBadgeText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: C.white,
+  },
+  ctaPrice: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "rgba(255,255,255,0.85)",
   },
 });
