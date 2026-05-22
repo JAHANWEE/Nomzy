@@ -18,7 +18,8 @@ import { useAuth } from "../context/AuthContext";
 
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
-const HERO_IMAGE = require("../../assets/nomz/login-page.png");
+const HERO_IMAGE   = require("../../assets/nomz/login-page.png");
+const GOOGLE_ICON  = require("../../assets/nomz/google.png");
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 const C = {
@@ -187,12 +188,9 @@ function GoogleButton({ onPress }) {
   return (
     <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View style={[styles.googleButton, { transform: [{ scale }] }]}>
-        {/* Google "G" rendered with colored segments */}
-        <View style={styles.googleIconContainer}>
-          <Text style={styles.googleIconText}>G</Text>
-        </View>
-        <Text style={styles.googleLabel}>Continue with Google</Text>
-      </Animated.View>
+          <Image source={GOOGLE_ICON} style={styles.googleIconImage} resizeMode="contain" />
+          <Text style={styles.googleLabel}>Continue with Google</Text>
+        </Animated.View>
     </Pressable>
   );
 }
@@ -255,7 +253,7 @@ export default function AuthScreen({ navigation }) {
   const isLogin = mode === "login";
   const handleAuth = async () => {
     await signIn();
-    navigation.replace("Home");
+    // GuardedNavigation swaps to MainTabs automatically when isLoggedIn becomes true
   };
 
   return (
@@ -615,18 +613,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  googleIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: C.white,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  googleIconText: {
-    fontSize: 13,
-    fontWeight: "800",
-    color: "#4285F4",
+  googleIconImage: {
+    width: 22,
+    height: 22,
   },
   googleLabel: {
     color: C.white,
