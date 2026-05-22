@@ -98,12 +98,24 @@ export function TabIcon({ name, color }) {
   return <Icon color={color} />;
 }
 
+function routeHasNestedScreen(route) {
+  let state = route.state;
+
+  while (state) {
+    const activeIndex = state.index || 0;
+    if (activeIndex > 0) return true;
+
+    state = state.routes?.[activeIndex]?.state;
+  }
+
+  return false;
+}
+
 export default function BottomNav({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
-  const homeRoute = state.routes.find((route) => route.name === "HomeTab");
-  const homeIndex = homeRoute?.state?.index || 0;
+  const activeRoute = state.routes[state.index];
 
-  if (state.routes[state.index].name === "HomeTab" && homeIndex > 0) {
+  if (routeHasNestedScreen(activeRoute)) {
     return null;
   }
 

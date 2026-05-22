@@ -255,7 +255,7 @@ export default function AuthScreen({ navigation }) {
   const isLogin = mode === "login";
   const handleAuth = async () => {
     await signIn();
-    // GuardedNavigation re-renders automatically — no navigate needed
+    navigation.replace("Home");
   };
 
   return (
