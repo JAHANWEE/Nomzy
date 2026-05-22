@@ -197,7 +197,7 @@ function GoogleButton({ onPress }) {
 }
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
-export default function AuthScreen() {
+export default function AuthScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [mode, setMode] = useState("login"); // "login" | "signup"
 
@@ -340,7 +340,7 @@ export default function AuthScreen() {
             <View style={styles.ctaRow}>
               <PillButton
                 label={isLogin ? "Sign In" : "Create Account"}
-                onPress={() => {}}
+                onPress={() => navigation.navigate("Home")}
               />
             </View>
 

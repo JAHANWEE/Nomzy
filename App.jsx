@@ -4,10 +4,11 @@ import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import AuthScreen from "./src/screens/AuthScreen";
+import HomeScreen from "./src/screens/HomeScreen";
 import AppSplashScreen from "./src/screens/SplashScreen";
 
 // Keep the native splash screen visible until we're ready
@@ -20,15 +21,6 @@ if (!isExpoGo) {
 }
 
 const Stack = createNativeStackNavigator();
-
-function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Nomzy</Text>
-      <StatusBar style="light" />
-    </View>
-  );
-}
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
@@ -51,7 +43,6 @@ export default function App() {
           </Stack.Navigator>
         </NavigationContainer>
 
-        {/* In-app animated splash sits on top until its animation finishes */}
         {!splashDone && (
           <AppSplashScreen onFinish={() => setSplashDone(true)} />
         )}
@@ -64,16 +55,5 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#120D0A",
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#120D0A",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#fff",
   },
 });
