@@ -23,11 +23,14 @@ export default function HomeScreen({ navigation }) {
   const handleTabPress = (tab) => {
     setActiveTab(tab);
     if (tab === "search") navigation.navigate("Discovery");
+    if (tab === "orders") navigation.navigate("Orders");
+    if (tab === "saved") navigation.navigate("Saved");
+    if (tab === "profile") navigation.navigate("Profile");
   };
 
   return (
     <View style={styles.root}>
-      <HomeHeader />
+      <HomeHeader navigation={navigation} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -45,15 +48,15 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <View style={styles.section}>
-          <PopularRestaurants />
+          <PopularRestaurants navigation={navigation} />
         </View>
 
         <View style={styles.section}>
-          <RecommendedSection />
+          <RecommendedSection navigation={navigation} />
         </View>
 
         <View style={styles.section}>
-          <NearbyRestaurants />
+          <NearbyRestaurants navigation={navigation} />
         </View>
       </ScrollView>
 

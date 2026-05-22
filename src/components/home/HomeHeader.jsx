@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path } from "react-native-svg";
+import { useCart } from "../../context/CartContext";
 import { C } from "../../data/homeData";
 
 // ─── Inline icons ─────────────────────────────────────────────────────────────
@@ -36,8 +37,9 @@ function CartIcon() {
   );
 }
 
-export default function HomeHeader() {
+export default function HomeHeader({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { itemCount } = useCart();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -56,11 +58,13 @@ export default function HomeHeader() {
       </View>
 
       {/* Right — cart */}
-      <Pressable style={styles.iconBtn}>
+      <Pressable style={styles.iconBtn} onPress={() => navigation.navigate("Cart")}>
         <CartIcon />
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>2</Text>
-        </View>
+        {itemCount > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{itemCount}</Text>
+          </View>
+        )}
       </Pressable>
     </View>
   );

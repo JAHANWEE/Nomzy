@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Svg, { Path, Polyline } from "react-native-svg";
 import { C, POPULAR } from "../../data/homeData";
+import { enrichRestaurant } from "../../data/restaurantUtils";
 import SectionHeader from "./SectionHeader";
 
 function StarIcon() {
@@ -52,7 +53,7 @@ function PinSmallIcon() {
   );
 }
 
-function RestaurantCard({ item, index }) {
+function RestaurantCard({ item, index, navigation }) {
   const [liked, setLiked] = useState(false);
   const opacity = useRef(new Animated.Value(0)).current;
   const translateX = useRef(new Animated.Value(30)).current;
@@ -83,7 +84,11 @@ function RestaurantCard({ item, index }) {
 
   return (
     <Animated.View style={[styles.card, { opacity, transform: [{ translateX }, { scale }] }]}>
-      <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={() => navigation.navigate("RestaurantDetail", { restaurant: enrichRestaurant(item) })}
+      >
         {/* Image */}
         <View style={styles.imageWrap}>
           <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
@@ -128,7 +133,7 @@ function RestaurantCard({ item, index }) {
   );
 }
 
-export default function PopularRestaurants() {
+export default function PopularRestaurants({ navigation }) {
   return (
     <View style={styles.root}>
       <SectionHeader title="Popular Restaurants" />
@@ -138,7 +143,7 @@ export default function PopularRestaurants() {
         contentContainerStyle={styles.scroll}
       >
         {POPULAR.map((item, i) => (
-          <RestaurantCard key={item.id} item={item} index={i} />
+          <RestaurantCard key={item.id} item={item} index={i} navigation={navigation} />
         ))}
       </ScrollView>
     </View>

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { C, RECOMMENDED } from "../../data/homeData";
+import { enrichRestaurant } from "../../data/restaurantUtils";
 import SectionHeader from "./SectionHeader";
 
 const { width } = Dimensions.get("window");
@@ -26,7 +27,7 @@ function StarIcon() {
   );
 }
 
-function SmallCard({ item, index }) {
+function SmallCard({ item, index, navigation }) {
   const [liked, setLiked] = useState(false);
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
@@ -51,7 +52,7 @@ function SmallCard({ item, index }) {
 
   return (
     <Animated.View style={[styles.card, { opacity, transform: [{ translateY }] }]}>
-      <Pressable>
+      <Pressable onPress={() => navigation.navigate("RestaurantDetail", { restaurant: enrichRestaurant(item) })}>
         <View style={styles.imageWrap}>
           <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
           <LinearGradient
@@ -77,7 +78,7 @@ function SmallCard({ item, index }) {
   );
 }
 
-export default function RecommendedSection() {
+export default function RecommendedSection({ navigation }) {
   return (
     <View style={styles.root}>
       <SectionHeader title="Recommended For You" />
@@ -87,7 +88,7 @@ export default function RecommendedSection() {
         contentContainerStyle={styles.scroll}
       >
         {RECOMMENDED.map((item, i) => (
-          <SmallCard key={item.id} item={item} index={i} />
+          <SmallCard key={item.id} item={item} index={i} navigation={navigation} />
         ))}
       </ScrollView>
     </View>

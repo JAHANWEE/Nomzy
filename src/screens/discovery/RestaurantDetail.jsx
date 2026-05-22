@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Line, Path, Polyline } from "react-native-svg";
+import { useCart } from "../../context/CartContext";
 import { C, MENU_CATEGORIES } from "../../data/discoveryData";
 
 const { width, height } = Dimensions.get("window");
@@ -127,19 +128,13 @@ export default function RestaurantDetail({ route, navigation }) {
   const { restaurant } = route.params;
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState("Recommended");
-
-  // Cart state: { [dishId]: qty }
-  const [cart, setCart] = useState({});
-
-  const addToCart = (dishId) =>
-    setCart((prev) => ({ ...prev, [dishId]: (prev[dishId] || 0) + 1 }));
-
-  const removeFromCart = (dishId) =>
-    setCart((prev) => {
-      const next = { ...prev, [dishId]: (prev[dishId] || 1) - 1 };
-      if (next[dishId] <= 0) delete next[dishId];
-      return next;
-    });
+  const {
+    restaurant: cartRestaurant,
+    cart: activeCart,
+    addItem,
+    removeItem,
+  } = useCart();
+  const cart = cartRestaurant?.id === restaurant.id ? activeCart : {};
 
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
@@ -225,8 +220,8 @@ export default function RestaurantDetail({ route, navigation }) {
                   key={dish.id}
                   dish={dish}
                   qty={cart[dish.id] || 0}
-                  onAdd={() => addToCart(dish.id)}
-                  onRemove={() => removeFromCart(dish.id)}
+                  onAdd={() => addItem(restaurant, dish.id)}
+                  onRemove={() => removeItem(restaurant, dish.id)}
                 />
               ))}
             </View>
@@ -250,7 +245,9 @@ export default function RestaurantDetail({ route, navigation }) {
       <View style={[styles.ctaBar, { paddingBottom: insets.bottom + 12 }]}>
         <Pressable
           style={styles.ctaBtn}
-          onPress={() => navigation.navigate("Menu", { restaurant })}
+          onPress={() =>
+            navigation.navigate(cartCount > 0 ? "Cart" : "Menu", { restaurant })
+          }
         >
           <LinearGradient
             colors={[C.orange, C.orangeDark]}

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Svg, { Path, Polyline } from "react-native-svg";
 import { C, NEARBY } from "../../data/homeData";
+import { enrichRestaurant } from "../../data/restaurantUtils";
 import SectionHeader from "./SectionHeader";
 
 function StarIcon() {
@@ -39,7 +40,7 @@ function ChevronIcon() {
   );
 }
 
-function NearbyRow({ item, index }) {
+function NearbyRow({ item, index, navigation }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateX = useRef(new Animated.Value(-20)).current;
 
@@ -63,7 +64,10 @@ function NearbyRow({ item, index }) {
 
   return (
     <Animated.View style={[styles.row, { opacity, transform: [{ translateX }] }]}>
-      <Pressable style={styles.rowInner}>
+      <Pressable
+        style={styles.rowInner}
+        onPress={() => navigation.navigate("RestaurantDetail", { restaurant: enrichRestaurant(item) })}
+      >
         <Image source={{ uri: item.image }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.rowInfo}>
           <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
@@ -86,13 +90,13 @@ function NearbyRow({ item, index }) {
   );
 }
 
-export default function NearbyRestaurants() {
+export default function NearbyRestaurants({ navigation }) {
   return (
     <View style={styles.root}>
       <SectionHeader title="Nearby Restaurants" />
       <View style={styles.list}>
         {NEARBY.map((item, i) => (
-          <NearbyRow key={item.id} item={item} index={i} />
+          <NearbyRow key={item.id} item={item} index={i} navigation={navigation} />
         ))}
       </View>
     </View>

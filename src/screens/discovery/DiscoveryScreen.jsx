@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path } from "react-native-svg";
+import { useCart } from "../../context/CartContext";
 import { C, RESTAURANTS } from "../../data/discoveryData";
 import ActionBar from "./ActionBar";
 import SwipeCard from "./SwipeCard";
@@ -45,6 +46,7 @@ export default function DiscoveryScreen({ navigation }) {
   const [deck, setDeck] = useState(RESTAURANTS);
   const [saved, setSaved] = useState([]);
   const cardRefs = useRef({});
+  const { itemCount } = useCart();
 
   const topRestaurant = deck[0];
 
@@ -113,11 +115,13 @@ export default function DiscoveryScreen({ navigation }) {
           </View>
         </View>
 
-        <Pressable style={styles.iconBtn}>
+        <Pressable style={styles.iconBtn} onPress={() => navigation.navigate("Cart")}>
           <CartIcon />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>2</Text>
-          </View>
+          {itemCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{itemCount}</Text>
+            </View>
+          )}
         </Pressable>
       </View>
 

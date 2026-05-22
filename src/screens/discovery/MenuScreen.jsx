@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Line, Path, Polyline } from "react-native-svg";
+import { useCart } from "../../context/CartContext";
 import { C, MENU_CATEGORIES } from "../../data/discoveryData";
 
 const { width } = Dimensions.get("window");
@@ -35,9 +36,7 @@ function PlusIcon() {
   );
 }
 
-function MenuItem({ dish }) {
-  const [qty, setQty] = useState(0);
-
+function MenuItem({ dish, qty, onAdd, onRemove }) {
   return (
     <View style={styles.menuItem}>
       <View style={styles.menuItemInfo}>
@@ -51,16 +50,16 @@ function MenuItem({ dish }) {
           <Image source={{ uri: dish.image }} style={styles.menuItemImage} resizeMode="cover" />
 
           {qty === 0 ? (
-            <Pressable style={styles.addBtn} onPress={() => setQty(1)}>
+            <Pressable style={styles.addBtn} onPress={onAdd}>
               <PlusIcon />
             </Pressable>
           ) : (
             <View style={styles.qtyControl}>
-              <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => Math.max(0, q - 1))}>
+              <Pressable style={styles.qtyBtn} onPress={onRemove}>
                 <Text style={styles.qtyBtnText}>−</Text>
               </Pressable>
               <Text style={styles.qtyText}>{qty}</Text>
-              <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => q + 1)}>
+              <Pressable style={styles.qtyBtn} onPress={onAdd}>
                 <Text style={styles.qtyBtnText}>+</Text>
               </Pressable>
             </View>
@@ -75,8 +74,14 @@ export default function MenuScreen({ route, navigation }) {
   const { restaurant } = route.params;
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState("Recommended");
-
-  const totalItems = 0; // would be computed from cart state in a real app
+  const {
+    restaurant: cartRestaurant,
+    cart: activeCart,
+    addItem,
+    removeItem,
+  } = useCart();
+  const cart = cartRestaurant?.id === restaurant.id ? activeCart : {};
+  const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 
   return (
     <View style={styles.root}>
@@ -102,10 +107,17 @@ export default function MenuScreen({ route, navigation }) {
         {MENU_CATEGORIES.map((cat) => (
           <Pressable
             key={cat}
-            style={[styles.catTab, activeCategory === cat && styles.catTabActive]}
+            style={[
+              styles.catTab,
+              cat.length > 8 && styles.catTabWide,
+              activeCategory === cat && styles.catTabActive,
+            ]}
             onPress={() => setActiveCategory(cat)}
           >
-            <Text style={[styles.catTabText, activeCategory === cat && styles.catTabTextActive]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.catTabText, activeCategory === cat && styles.catTabTextActive]}
+            >
               {cat}
             </Text>
           </Pressable>
@@ -125,26 +137,37 @@ export default function MenuScreen({ route, navigation }) {
       >
         <Text style={styles.categoryHeading}>{activeCategory}</Text>
         {restaurant.menu.map((dish) => (
-          <MenuItem key={dish.id} dish={dish} />
+          <MenuItem
+            key={dish.id}
+            dish={dish}
+            qty={cart[dish.id] || 0}
+            onAdd={() => addItem(restaurant, dish.id)}
+            onRemove={() => removeItem(restaurant, dish.id)}
+          />
         ))}
       </ScrollView>
 
       {/* ── Cart CTA ── */}
-      <View style={[styles.cartBar, { paddingBottom: insets.bottom + 12 }]}>
-        <Pressable style={styles.cartBtn}>
-          <LinearGradient
-            colors={[C.orange, C.orangeDark]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.cartGradient}
+      {totalItems > 0 && (
+        <View style={[styles.cartBar, { paddingBottom: insets.bottom + 12 }]}>
+          <Pressable
+            style={styles.cartBtn}
+            onPress={() => navigation.navigate("Cart")}
           >
-            <Text style={styles.cartLabel}>View Cart</Text>
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>2</Text>
-            </View>
-          </LinearGradient>
-        </Pressable>
-      </View>
+            <LinearGradient
+              colors={[C.orange, C.orangeDark]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.cartGradient}
+            >
+              <Text style={styles.cartLabel}>View Cart</Text>
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{totalItems}</Text>
+              </View>
+            </LinearGradient>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
@@ -192,26 +215,37 @@ const styles = StyleSheet.create({
   // Category tabs
   categoryScroll: {
     flexGrow: 0,
+    flexShrink: 0,
+    height: 40,
   },
   categoryTabs: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 20,
     gap: 8,
-    paddingBottom: 2,
   },
   catTab: {
-    paddingHorizontal: 16,
+    flexShrink: 0,
+    minWidth: 72,
+    minHeight: 36,
+    paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: C.card,
     borderWidth: 1,
     borderColor: C.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  catTabWide: {
+    minWidth: 108,
   },
   catTabActive: {
     backgroundColor: "rgba(255,159,45,0.12)",
     borderColor: C.orange,
   },
   catTabText: {
-    fontSize: 13,
+    fontSize: 12.5,
     color: C.secondary,
     fontWeight: "500",
   },

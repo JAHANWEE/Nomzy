@@ -9,10 +9,17 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import AuthScreen from "./src/screens/AuthScreen";
+import CartScreen from "./src/screens/cart/CartScreen";
+import OrderConfirmedScreen from "./src/screens/cart/OrderConfirmedScreen";
+import { CartProvider } from "./src/context/CartContext";
+import { OrdersProvider } from "./src/context/OrdersContext";
 import DiscoveryScreen from "./src/screens/discovery/DiscoveryScreen";
 import MenuScreen from "./src/screens/discovery/MenuScreen";
 import RestaurantDetail from "./src/screens/discovery/RestaurantDetail";
 import HomeScreen from "./src/screens/HomeScreen";
+import OrdersScreen from "./src/screens/OrdersScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
+import SavedScreen from "./src/screens/SavedScreen";
 import AppSplashScreen from "./src/screens/SplashScreen";
 
 SplashScreen.preventAutoHideAsync();
@@ -36,26 +43,43 @@ export default function App() {
       <SafeAreaProvider>
         <View style={styles.root} onLayout={handleLayout}>
           <StatusBar style="light" />
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName="Auth"
-              screenOptions={{ headerShown: false, animation: "fade" }}
-            >
-              <Stack.Screen name="Auth" component={AuthScreen} />
-              <Stack.Screen name="Home" component={HomeScreen} />
-              <Stack.Screen name="Discovery" component={DiscoveryScreen} />
-              <Stack.Screen
-                name="RestaurantDetail"
-                component={RestaurantDetail}
-                options={{ animation: "slide_from_bottom" }}
-              />
-              <Stack.Screen
-                name="Menu"
-                component={MenuScreen}
-                options={{ animation: "slide_from_right" }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <CartProvider>
+            <OrdersProvider>
+              <NavigationContainer>
+                <Stack.Navigator
+                  initialRouteName="Auth"
+                  screenOptions={{ headerShown: false, animation: "fade" }}
+                >
+                  <Stack.Screen name="Auth" component={AuthScreen} />
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="Discovery" component={DiscoveryScreen} />
+                  <Stack.Screen name="Orders" component={OrdersScreen} />
+                  <Stack.Screen name="Saved" component={SavedScreen} />
+                  <Stack.Screen name="Profile" component={ProfileScreen} />
+                  <Stack.Screen
+                    name="RestaurantDetail"
+                    component={RestaurantDetail}
+                    options={{ animation: "slide_from_bottom" }}
+                  />
+                  <Stack.Screen
+                    name="Menu"
+                    component={MenuScreen}
+                    options={{ animation: "slide_from_right" }}
+                  />
+                  <Stack.Screen
+                    name="Cart"
+                    component={CartScreen}
+                    options={{ animation: "slide_from_right" }}
+                  />
+                  <Stack.Screen
+                    name="OrderConfirmed"
+                    component={OrderConfirmedScreen}
+                    options={{ animation: "slide_from_bottom" }}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </OrdersProvider>
+          </CartProvider>
 
           {!splashDone && (
             <AppSplashScreen onFinish={() => setSplashDone(true)} />
