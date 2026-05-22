@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Animated,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -17,7 +17,7 @@ import UserIcon from "../components/icons/UserIcon";
 
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
-const HERO_IMAGE = require("../../assets/nomz/splash_screen.jpeg");
+const HERO_IMAGE = require("../../assets/nomz/login-page.png");
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 const C = {
@@ -35,7 +35,7 @@ const C = {
 };
 
 const { width, height } = Dimensions.get("window");
-const HERO_HEIGHT = height * 0.38;
+const HERO_HEIGHT = height * 0.55;
 
 // ─── Spice particle ──────────────────────────────────────────────────────────
 function SpiceParticle({ x, delay, size, opacity }) {
@@ -268,7 +268,7 @@ export default function AuthScreen() {
         {/* Brand mark on hero */}
         <View style={[styles.brandMark, { top: insets.top + 20 }]}>
           <Text style={styles.brandName}>nomzy</Text>
-          <Text style={styles.brandDot}>•</Text>
+          <Text style={styles.brandAccent}>.</Text>
         </View>
       </Animated.View>
 
@@ -377,11 +377,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Hero
+  // Hero — fills entire screen, form card floats over it
   heroContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
     width,
-    height: HERO_HEIGHT,
-    overflow: "hidden",
+    height,
   },
   heroImage: {
     width: "100%",
@@ -415,35 +417,44 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: HERO_HEIGHT * 0.55,
+    height: height * 0.55,
     backgroundColor: C.bg,
-    opacity: 0.82,
+    opacity: 0.92,
   },
   brandMark: {
     position: "absolute",
-    left: 28,
+    left: 24,
     flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+    alignItems: "flex-end",
+    gap: 2,
   },
   brandName: {
-    fontSize: 22,
+    fontSize: 36,
     fontWeight: "800",
     color: C.white,
-    letterSpacing: 2,
+    letterSpacing: 3,
+    textShadowColor: "rgba(0,0,0,0.8)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
-  brandDot: {
-    fontSize: 18,
-    color: C.orange,
+  brandAccent: {
+    fontSize: 42,
     fontWeight: "900",
+    color: C.orange,
+    lineHeight: 46,
+    textShadowColor: "rgba(0,0,0,0.6)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
 
-  // Form outer — fills remaining space below hero, no scroll
+  // Form outer — overlaps hero, card sits at eye level
   formOuter: {
-    flex: 1,
-    marginTop: -28,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: 20,
-    justifyContent: "flex-start",
+    paddingBottom: 48,
   },
 
   // Form card
