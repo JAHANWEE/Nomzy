@@ -1,56 +1,83 @@
-# Welcome to your Expo app 👋
+# Nomzy
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A premium dark-themed food delivery app built with React Native and Expo SDK 55.
 
-## Get started
+<p align="center">
+  <a href="https://x.com/jaaaani404/status/2057963077577146451?s=20">
+    <img
+      src="https://github.com/user-attachments/assets/b9ec2640-9634-4c8b-8164-0d79f0c38991"
+      alt="Nomzy app screens — click to watch demo"
+      width="100%"
+    />
+  </a>
+</p>
 
-1. Install dependencies
+<p align="center">
+  <a href="https://x.com/jaaaani404/status/2057963077577146451?s=20">▶ Watch the demo video</a>
+</p>
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+- **Expo** ~55.0.26 · **React Native** 0.83.6
+- **React Navigation** v7 — Native Stack, Bottom Tabs, Drawer
+- **Reanimated** 4.2.1 + **Gesture Handler** 2.30
+- **AsyncStorage** — auth persistence
+- **Expo Linear Gradient** · **react-native-svg**
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run Locally
 
 ```bash
-npm run reset-project
+npm install
+npm start        # scan QR with Expo Go
+npm run ios      # iOS simulator
+npm run android  # Android emulator
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Navigation Structure
 
-### Other setup steps
+```
+Auth Stack
+└── AuthScreen (Login / Sign Up)
+        │ signIn() → GuardedNavigation swaps to MainTabs
+        ▼
+Bottom Tab Navigator
+├── HomeTab (Stack)
+│   ├── HomeScreen
+│   ├── RestaurantDetail   ← deep link: foodapp://restaurant/:id
+│   ├── MenuScreen
+│   ├── CartScreen
+│   ├── OrderConfirmedScreen
+│   └── HelpScreen
+├── Search → DiscoveryScreen (swipe deck)
+├── Orders → OrdersScreen
+├── Saved  → SavedScreen
+└── Profile → Drawer Navigator
+              ├── ProfileScreen
+              └── Custom drawer (My Orders · Settings · Help · Logout)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Sidebar overlay (hamburger on any screen)
+└── Home · Discover · Orders · Saved · Profile · Help · Logout
+```
 
-## Learn more
+## Deep Linking
 
-To learn more about developing your project with Expo, look at the following resources:
+| URL | Opens |
+|---|---|
+| `foodapp://restaurant/1` | RestaurantDetail for restaurant id 1 |
+| `nomzy://restaurant/1` | same |
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Auth Flow
 
-## Join the community
+- Login state persisted in `AsyncStorage` (`@nomzy_auth`)
+- On launch: reads storage → shows Auth or Main app
+- Logout clears storage → `GuardedNavigation` re-renders to Auth
 
-Join our community of developers creating universal apps.
+## Key Features
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Swipe-based restaurant discovery deck (Reanimated 4 + Gesture Handler)
+- Cart with bill breakdown, place order → Order Confirmed
+- Orders history via `OrdersContext`
+- Profile drawer with real order count from context
+- Animated in-app splash screen
