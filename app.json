@@ -27,10 +27,23 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#000000",
+          "image": "./assets/nomz/splash_screen.jpeg",
+          "imageWidth": 1080,
+          "resizeMode": "cover",
+          "enableFullScreenImage_legacy": true,
+          "dark": {
+            "backgroundColor": "#000000",
+            "image": "./assets/nomz/splash_screen.jpeg"
+          },
           "android": {
-            "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
+            "image": "./assets/nomz/splash_screen.jpeg",
+            "imageWidth": 1080,
+            "resizeMode": "cover"
+          },
+          "ios": {
+            "image": "./assets/nomz/splash_screen.jpeg",
+            "resizeMode": "cover"
           }
         }
       ]
