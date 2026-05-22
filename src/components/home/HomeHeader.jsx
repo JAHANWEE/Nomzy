@@ -1,21 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path } from "react-native-svg";
+import SidebarButton from "../navigation/SidebarButton";
 import { useCart } from "../../context/CartContext";
 import { C } from "../../data/homeData";
 
 // ─── Inline icons ─────────────────────────────────────────────────────────────
-function MenuIcon() {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none"
-      stroke={C.secondary} strokeWidth={1.8} strokeLinecap="round">
-      <Line x1="3" y1="6"  x2="21" y2="6"  />
-      <Line x1="3" y1="12" x2="21" y2="12" />
-      <Line x1="3" y1="18" x2="15" y2="18" />
-    </Svg>
-  );
-}
-
 function PinIcon() {
   return (
     <Svg width={14} height={14} viewBox="0 0 24 24" fill={C.orange}
@@ -44,12 +34,7 @@ export default function HomeHeader({ navigation }) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* Left — menu */}
-      <Pressable
-        style={styles.iconBtn}
-        onPress={() => navigation.getParent()?.navigate("Profile")}
-      >
-        <MenuIcon />
-      </Pressable>
+      <SidebarButton />
 
       {/* Center — location */}
       <View style={styles.locationBlock}>

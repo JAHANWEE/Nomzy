@@ -2,23 +2,13 @@ import { useRef, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path } from "react-native-svg";
+import SidebarButton from "../../components/navigation/SidebarButton";
 import { useCart } from "../../context/CartContext";
 import { C, RESTAURANTS } from "../../data/discoveryData";
 import ActionBar from "./ActionBar";
 import SwipeCard from "./SwipeCard";
 
 const { width } = Dimensions.get("window");
-
-function FilterIcon() {
-  return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none"
-      stroke={C.secondary} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <Line x1="4" y1="6" x2="20" y2="6" />
-      <Line x1="8" y1="12" x2="16" y2="12" />
-      <Line x1="11" y1="18" x2="13" y2="18" />
-    </Svg>
-  );
-}
 
 function CartIcon() {
   return (
@@ -109,9 +99,7 @@ export default function DiscoveryScreen({ navigation }) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* ── Header ── */}
       <View style={styles.header}>
-        <Pressable style={styles.iconBtn}>
-          <FilterIcon />
-        </Pressable>
+        <SidebarButton />
 
         <View style={styles.locationBlock}>
           <Text style={styles.locationLabel}>Current Location</Text>

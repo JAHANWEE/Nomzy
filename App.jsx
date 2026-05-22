@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { createNavigationContainerRef, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
@@ -11,9 +11,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import BottomNav, { TabIcon } from "./src/components/navigation/BottomNav";
+import Sidebar from "./src/components/Sidebar";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { CartProvider } from "./src/context/CartContext";
 import { OrdersProvider, useOrders } from "./src/context/OrdersContext";
+import { SidebarProvider } from "./src/context/SidebarContext";
 import AuthScreen from "./src/screens/AuthScreen";
 import CartScreen from "./src/screens/cart/CartScreen";
 import OrderConfirmedScreen from "./src/screens/cart/OrderConfirmedScreen";
@@ -21,6 +23,7 @@ import DiscoveryScreen from "./src/screens/discovery/DiscoveryScreen";
 import MenuScreen from "./src/screens/discovery/MenuScreen";
 import RestaurantDetail from "./src/screens/discovery/RestaurantDetail";
 import HomeScreen from "./src/screens/HomeScreen";
+import HelpScreen from "./src/screens/HelpScreen";
 import OrdersScreen from "./src/screens/OrdersScreen";
 import ProfileDrawer from "./src/screens/ProfileDrawer";
 import SavedScreen from "./src/screens/SavedScreen";
@@ -36,6 +39,7 @@ if (!isExpoGo) {
 const AuthStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const navigationRef = createNavigationContainerRef();
 
 const linking = {
   prefixes: [Linking.createURL("/"), "nomzy://", "foodapp://"],
@@ -73,6 +77,11 @@ function HomeNavigator() {
         name="OrderConfirmed"
         component={OrderConfirmedScreen}
         options={{ animation: "slide_from_bottom" }}
+      />
+      <HomeStack.Screen
+        name="Help"
+        component={HelpScreen}
+        options={{ animation: "slide_from_right" }}
       />
     </HomeStack.Navigator>
   );
@@ -132,9 +141,25 @@ function GuardedNavigation() {
   if (isLoading) return null;
 
   return (
-    <NavigationContainer linking={isLoggedIn ? linking : undefined}>
-      {isLoggedIn ? <MainTabs /> : <AuthNavigator />}
+    <NavigationContainer ref={navigationRef} linking={isLoggedIn ? linking : undefined}>
+      {isLoggedIn ? (
+        <SidebarProvider>
+          <MainTabsWithSidebar />
+        </SidebarProvider>
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
+  );
+}
+
+// Renders MainTabs + the sidebar overlay on top
+function MainTabsWithSidebar() {
+  return (
+    <View style={{ flex: 1 }}>
+      <MainTabs />
+      <Sidebar navigation={navigationRef} />
+    </View>
   );
 }
 

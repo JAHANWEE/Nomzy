@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
+import SidebarButton from "../components/navigation/SidebarButton";
 import { useOrders } from "../context/OrdersContext";
 import { C } from "../data/homeData";
 
@@ -49,8 +50,11 @@ export default function OrdersScreen({ navigation }) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Orders</Text>
-        <Text style={styles.subtitle}>Orders placed from your cart appear here.</Text>
+        <View style={styles.headerCopy}>
+          <Text style={styles.title}>Orders</Text>
+          <Text style={styles.subtitle}>Orders placed from your cart appear here.</Text>
+        </View>
+        <SidebarButton />
       </View>
 
       <ScrollView
@@ -89,9 +93,16 @@ const styles = StyleSheet.create({
     backgroundColor: C.bg,
   },
   header: {
-    gap: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
     paddingHorizontal: 20,
     paddingBottom: 18,
+  },
+  headerCopy: {
+    flex: 1,
+    gap: 4,
   },
   title: {
     color: C.white,

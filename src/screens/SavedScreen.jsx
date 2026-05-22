@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
+import SidebarButton from "../components/navigation/SidebarButton";
 import { C } from "../data/homeData";
 
 const { width } = Dimensions.get("window");
@@ -159,8 +160,11 @@ export default function SavedScreen({ navigation }) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* ── Header ── */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Saved</Text>
-        <Text style={styles.headerSub}>Your curated collection</Text>
+        <View style={styles.headerCopy}>
+          <Text style={styles.headerTitle}>Saved</Text>
+          <Text style={styles.headerSub}>Your curated collection</Text>
+        </View>
+        <SidebarButton />
       </View>
 
       {/* ── Section tabs ── */}
@@ -215,8 +219,15 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
     paddingHorizontal: 20,
     paddingBottom: 16,
+  },
+  headerCopy: {
+    flex: 1,
     gap: 4,
   },
   headerTitle: {

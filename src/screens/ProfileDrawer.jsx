@@ -65,8 +65,8 @@ function CustomDrawerContent({ navigation }) {
 
   const items = [
     { label: "My Orders",  icon: <OrderIcon />,   onPress: () => navigation.navigate("Orders") },
-    { label: "Settings",   icon: <SettingsIcon />, onPress: () => {} },
-    { label: "Help",       icon: <HelpIcon />,     onPress: () => {} },
+    { label: "Settings",   icon: <SettingsIcon />, onPress: () => navigation.navigate("Profile") },
+    { label: "Help",       icon: <HelpIcon />,     onPress: () => navigation.navigate("HomeTab", { screen: "Help" }) },
   ];
 
   return (

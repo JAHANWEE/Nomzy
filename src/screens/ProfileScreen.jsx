@@ -10,18 +10,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
+import SidebarButton from "../components/navigation/SidebarButton";
 import { useAuth } from "../context/AuthContext";
 import { useOrders } from "../context/OrdersContext";
 import { C } from "../data/homeData";
-
-function MenuBarsIcon() {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none"
-      stroke={C.secondary} strokeWidth={1.8} strokeLinecap="round">
-      <Path d="M3 6h18M3 12h18M3 18h12" />
-    </Svg>
-  );
-}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 function ChevronIcon() {
@@ -168,9 +160,7 @@ export default function ProfileScreen({ navigation }) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Drawer open button */}
       <View style={styles.drawerRow}>
-        <Pressable style={styles.drawerBtn} onPress={() => navigation.openDrawer()}>
-          <MenuBarsIcon />
-        </Pressable>
+        <SidebarButton />
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -218,7 +208,11 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <View style={styles.card}>
-            <MenuRow icon={<OrderIcon />} label="My Orders" onPress={() => navigation.navigate("Orders")} />
+            <MenuRow
+              icon={<OrderIcon />}
+              label="My Orders"
+              onPress={() => navigation.getParent()?.navigate("Orders")}
+            />
             <View style={styles.rowDivider} />
             <MenuRow icon={<AddressIcon />} label="Saved Addresses" value="2 saved" onPress={() => {}} />
             <View style={styles.rowDivider} />
@@ -238,7 +232,13 @@ export default function ProfileScreen({ navigation }) {
               onToggle={setNotifEnabled}
             />
             <View style={styles.rowDivider} />
-            <MenuRow icon={<HelpIcon />} label="Help & Support" onPress={() => {}} />
+            <MenuRow
+              icon={<HelpIcon />}
+              label="Help & Support"
+              onPress={() =>
+                navigation.getParent()?.navigate("HomeTab", { screen: "Help" })
+              }
+            />
           </View>
         </View>
 

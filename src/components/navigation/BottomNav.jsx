@@ -98,14 +98,25 @@ export function TabIcon({ name, color }) {
   return <Icon color={color} />;
 }
 
-function routeHasNestedScreen(route) {
+const TAB_HIDDEN_SCREENS = new Set([
+  "RestaurantDetail",
+  "Menu",
+  "Cart",
+  "OrderConfirmed",
+  "Help",
+]);
+
+function routeHidesTabBar(route) {
   let state = route.state;
 
   while (state) {
     const activeIndex = state.index || 0;
     if (activeIndex > 0) return true;
 
-    state = state.routes?.[activeIndex]?.state;
+    const nestedRoute = state.routes?.[activeIndex];
+    if (TAB_HIDDEN_SCREENS.has(nestedRoute?.name)) return true;
+
+    state = nestedRoute?.state;
   }
 
   return false;
@@ -115,7 +126,7 @@ export default function BottomNav({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
   const activeRoute = state.routes[state.index];
 
-  if (routeHasNestedScreen(activeRoute)) {
+  if (activeRoute.name === "Search" || routeHidesTabBar(activeRoute)) {
     return null;
   }
 
