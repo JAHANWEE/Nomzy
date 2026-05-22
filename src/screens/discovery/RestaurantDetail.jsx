@@ -142,16 +142,6 @@ export default function RestaurantDetail({ route, navigation }) {
             <Text style={styles.description}>{restaurant.description}</Text>
           </View>
 
-          {/* Reviews */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Reviews</Text>
-            <View style={styles.reviewList}>
-              {restaurant.reviews.map((r, i) => (
-                <ReviewCard key={i} review={r} />
-              ))}
-            </View>
-          </View>
-
           {/* Menu preview */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Popular Dishes</Text>
@@ -179,6 +169,16 @@ export default function RestaurantDetail({ route, navigation }) {
             <View style={styles.dishGrid}>
               {restaurant.menu.map((dish) => (
                 <DishPreviewCard key={dish.id} dish={dish} />
+              ))}
+            </View>
+          </View>
+
+          {/* Reviews */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Reviews</Text>
+            <View style={styles.reviewList}>
+              {restaurant.reviews.map((r, i) => (
+                <ReviewCard key={i} review={r} />
               ))}
             </View>
           </View>
