@@ -5,16 +5,18 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import AuthScreen from "./src/screens/AuthScreen";
+import DiscoveryScreen from "./src/screens/discovery/DiscoveryScreen";
+import MenuScreen from "./src/screens/discovery/MenuScreen";
+import RestaurantDetail from "./src/screens/discovery/RestaurantDetail";
 import HomeScreen from "./src/screens/HomeScreen";
 import AppSplashScreen from "./src/screens/SplashScreen";
 
-// Keep the native splash screen visible until we're ready
 SplashScreen.preventAutoHideAsync();
 
-// setOptions only works in standalone/dev builds, not Expo Go
 const isExpoGo = Constants.appOwnership === "expo";
 if (!isExpoGo) {
   SplashScreen.setOptions({ duration: 400, fade: true });
@@ -30,24 +32,37 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <View style={styles.root} onLayout={handleLayout}>
-        <StatusBar style="light" />
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Auth"
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen name="Auth" component={AuthScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={styles.root} onLayout={handleLayout}>
+          <StatusBar style="light" />
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Auth"
+              screenOptions={{ headerShown: false, animation: "fade" }}
+            >
+              <Stack.Screen name="Auth" component={AuthScreen} />
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="Discovery" component={DiscoveryScreen} />
+              <Stack.Screen
+                name="RestaurantDetail"
+                component={RestaurantDetail}
+                options={{ animation: "slide_from_bottom" }}
+              />
+              <Stack.Screen
+                name="Menu"
+                component={MenuScreen}
+                options={{ animation: "slide_from_right" }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
 
-        {!splashDone && (
-          <AppSplashScreen onFinish={() => setSplashDone(true)} />
-        )}
-      </View>
-    </SafeAreaProvider>
+          {!splashDone && (
+            <AppSplashScreen onFinish={() => setSplashDone(true)} />
+          )}
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

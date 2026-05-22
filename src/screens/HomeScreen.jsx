@@ -16,9 +16,14 @@ import { C } from "../data/homeData";
 
 const NAV_HEIGHT = 80;
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("home");
+
+  const handleTabPress = (tab) => {
+    setActiveTab(tab);
+    if (tab === "search") navigation.navigate("Discovery");
+  };
 
   return (
     <View style={styles.root}>
@@ -52,7 +57,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      <BottomNav activeTab={activeTab} onTabPress={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }
