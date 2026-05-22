@@ -44,7 +44,10 @@ export default function HomeHeader({ navigation }) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* Left — menu */}
-      <Pressable style={styles.iconBtn}>
+      <Pressable
+        style={styles.iconBtn}
+        onPress={() => navigation.getParent()?.navigate("Profile")}
+      >
         <MenuIcon />
       </Pressable>
 

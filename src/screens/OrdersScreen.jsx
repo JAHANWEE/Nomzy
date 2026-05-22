@@ -1,9 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import BottomNav from "../components/navigation/BottomNav";
 import { useOrders } from "../context/OrdersContext";
 import { C } from "../data/homeData";
 
@@ -47,15 +45,6 @@ function OrderCard({ order }) {
 export default function OrdersScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { orders } = useOrders();
-  const [activeTab, setActiveTab] = useState("orders");
-
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    if (tab === "home") navigation.navigate("Home");
-    if (tab === "search") navigation.navigate("Discovery");
-    if (tab === "saved") navigation.navigate("Saved");
-    if (tab === "profile") navigation.navigate("Profile");
-  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -78,7 +67,7 @@ export default function OrdersScreen({ navigation }) {
             </LinearGradient>
             <Text style={styles.emptyTitle}>No orders yet</Text>
             <Text style={styles.emptyText}>Place an order from a restaurant menu to track it here.</Text>
-            <Pressable style={styles.emptyBtn} onPress={() => navigation.navigate("Discovery")}>
+            <Pressable style={styles.emptyBtn} onPress={() => navigation.navigate("Search")}>
               <Text style={styles.emptyBtnText}>Find Food</Text>
             </Pressable>
           </View>
@@ -90,8 +79,6 @@ export default function OrdersScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
-
-      <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }

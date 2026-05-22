@@ -55,15 +55,15 @@ function ProfileIcon({ color }) {
   );
 }
 
-const TABS = [
-  { id: "home",    label: "Home",    Icon: HomeIcon    },
-  { id: "search",  label: "Search",  Icon: SearchIcon  },
-  { id: "orders",  label: "Orders",  Icon: OrdersIcon  },
-  { id: "saved",   label: "Saved",   Icon: HeartIcon   },
-  { id: "profile", label: "Profile", Icon: ProfileIcon },
-];
+const ICONS = {
+  HomeTab: HomeIcon,
+  Search: SearchIcon,
+  Orders: OrdersIcon,
+  Saved: HeartIcon,
+  Profile: ProfileIcon,
+};
 
-function TabItem({ tab, active, onPress }) {
+function TabItem({ label, Icon, active, badge, onPress }) {
   const scale = useRef(new Animated.Value(1)).current;
   const color = active ? C.orange : C.secondary;
 
@@ -81,27 +81,62 @@ function TabItem({ tab, active, onPress }) {
     >
       <Animated.View style={[styles.tabInner, { transform: [{ scale }] }]}>
         {active && <View style={styles.activeGlow} />}
-        <tab.Icon color={color} />
-        <Text style={[styles.tabLabel, { color }]}>{tab.label}</Text>
+        <Icon color={color} />
+        {badge ? (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{badge}</Text>
+          </View>
+        ) : null}
+        <Text style={[styles.tabLabel, { color }]}>{label}</Text>
       </Animated.View>
     </Pressable>
   );
 }
 
-export default function BottomNav({ activeTab, onTabPress }) {
+export function TabIcon({ name, color }) {
+  const Icon = ICONS[name] || HomeIcon;
+  return <Icon color={color} />;
+}
+
+export default function BottomNav({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
+  const homeRoute = state.routes.find((route) => route.name === "HomeTab");
+  const homeIndex = homeRoute?.state?.index || 0;
+
+  if (state.routes[state.index].name === "HomeTab" && homeIndex > 0) {
+    return null;
+  }
 
   return (
     <View style={[styles.wrapper, { bottom: insets.bottom + 12 }]}>
       <View style={styles.pill}>
-        {TABS.map((tab) => (
-          <TabItem
-            key={tab.id}
-            tab={tab}
-            active={activeTab === tab.id}
-            onPress={() => onTabPress(tab.id)}
-          />
-        ))}
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label = options.title || route.name;
+          const Icon = ICONS[route.name] || HomeIcon;
+          const active = state.index === index;
+
+          return (
+            <TabItem
+              key={route.key}
+              label={label}
+              Icon={Icon}
+              active={active}
+              badge={options.tabBarBadge}
+              onPress={() => {
+                const event = navigation.emit({
+                  type: "tabPress",
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+
+                if (!active && !event.defaultPrevented) {
+                  navigation.navigate(route.name);
+                }
+              }}
+            />
+          );
+        })}
       </View>
     </View>
   );
@@ -154,5 +189,22 @@ const styles = StyleSheet.create({
     fontSize: 9.5,
     fontWeight: "600",
     letterSpacing: 0.2,
+  },
+  badge: {
+    position: "absolute",
+    top: 0,
+    right: 1,
+    minWidth: 14,
+    height: 14,
+    borderRadius: 7,
+    paddingHorizontal: 3,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.orange,
+  },
+  badgeText: {
+    color: C.white,
+    fontSize: 8,
+    fontWeight: "700",
   },
 });

@@ -55,13 +55,19 @@ export default function DiscoveryScreen({ navigation }) {
   };
 
   const handleSwipeRight = (restaurant) => {
-    navigation.navigate("RestaurantDetail", { restaurant });
+    navigation.navigate("HomeTab", {
+      screen: "RestaurantDetail",
+      params: { restaurant },
+    });
     // Rotate card to back of deck so browsing continues on return
     setDeck((prev) => [...prev.slice(1), prev[0]]);
   };
 
   const handleSwipeUp = (restaurant) => {
-    navigation.navigate("RestaurantDetail", { restaurant });
+    navigation.navigate("HomeTab", {
+      screen: "RestaurantDetail",
+      params: { restaurant },
+    });
     // Put the card back at the end so deck doesn't shrink
     setDeck((prev) => [...prev.slice(1), prev[0]]);
   };
@@ -115,7 +121,10 @@ export default function DiscoveryScreen({ navigation }) {
           </View>
         </View>
 
-        <Pressable style={styles.iconBtn} onPress={() => navigation.navigate("Cart")}>
+        <Pressable
+          style={styles.iconBtn}
+          onPress={() => navigation.navigate("HomeTab", { screen: "Cart" })}
+        >
           <CartIcon />
           {itemCount > 0 && (
             <View style={styles.badge}>

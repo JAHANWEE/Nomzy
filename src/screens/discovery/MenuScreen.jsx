@@ -47,7 +47,11 @@ function MenuItem({ dish, qty, onAdd, onRemove }) {
 
       <View style={styles.menuItemRight}>
         <View style={styles.menuItemImageWrap}>
-          <Image source={{ uri: dish.image }} style={styles.menuItemImage} resizeMode="cover" />
+          <Image
+            source={typeof dish.image === "string" ? { uri: dish.image } : dish.image}
+            style={styles.menuItemImage}
+            resizeMode="cover"
+          />
 
           {qty === 0 ? (
             <Pressable style={styles.addBtn} onPress={onAdd}>

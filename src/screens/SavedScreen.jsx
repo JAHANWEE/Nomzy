@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import BottomNav from "../components/navigation/BottomNav";
 import { C } from "../data/homeData";
 
 const { width } = Dimensions.get("window");
@@ -150,17 +149,8 @@ const TABS = ["Restaurants", "Dishes"];
 
 export default function SavedScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState("saved");
   const [activeSection, setActiveSection] = useState("Restaurants");
   const [saved, setSaved] = useState(SAVED_RESTAURANTS.map((r) => r.id));
-
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    if (tab === "home") navigation.navigate("Home");
-    if (tab === "search") navigation.navigate("Discovery");
-    if (tab === "orders") navigation.navigate("Orders");
-    if (tab === "profile") navigation.navigate("Profile");
-  };
 
   const handleUnsave = (id) => setSaved((prev) => prev.filter((x) => x !== id));
   const visibleRestaurants = SAVED_RESTAURANTS.filter((r) => saved.includes(r.id));
@@ -213,8 +203,6 @@ export default function SavedScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
-
-      <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }

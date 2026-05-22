@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Line, Path, Polyline } from "react-native-svg";
 import { useCart } from "../../context/CartContext";
-import { C, MENU_CATEGORIES } from "../../data/discoveryData";
+import { C, MENU_CATEGORIES, RESTAURANTS } from "../../data/discoveryData";
 
 const { width, height } = Dimensions.get("window");
 const HERO_HEIGHT = height * 0.46;
@@ -99,7 +99,7 @@ function MenuItemCard({ dish, qty, onAdd, onRemove }) {
       <View style={styles.menuItemRight}>
         <View style={styles.menuItemImageWrap}>
           <Image
-            source={{ uri: dish.image }}
+            source={typeof dish.image === "string" ? { uri: dish.image } : dish.image}
             style={styles.menuItemImage}
             resizeMode="cover"
           />
@@ -125,7 +125,9 @@ function MenuItemCard({ dish, qty, onAdd, onRemove }) {
 }
 
 export default function RestaurantDetail({ route, navigation }) {
-  const { restaurant } = route.params;
+  const restaurant =
+    route.params?.restaurant ||
+    RESTAURANTS.find((item) => item.id === route.params?.id);
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState("Recommended");
   const {
@@ -134,16 +136,27 @@ export default function RestaurantDetail({ route, navigation }) {
     addItem,
     removeItem,
   } = useCart();
-  const cart = cartRestaurant?.id === restaurant.id ? activeCart : {};
+  const cart = restaurant && cartRestaurant?.id === restaurant.id ? activeCart : {};
 
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
   // Parse price string like "₹349" → 349
   const parsePrice = (str) => parseInt(str.replace(/[^\d]/g, ""), 10) || 0;
 
-  const cartTotal = restaurant.menu.reduce((sum, dish) => {
+  const cartTotal = restaurant?.menu.reduce((sum, dish) => {
     return sum + parsePrice(dish.price) * (cart[dish.id] || 0);
-  }, 0);
+  }, 0) || 0;
+
+  if (!restaurant) {
+    return (
+      <View style={[styles.root, styles.missing]}>
+        <Text style={styles.missingTitle}>Restaurant not found</Text>
+        <Pressable style={styles.missingBtn} onPress={() => navigation.goBack()}>
+          <Text style={styles.missingBtnText}>Go Back</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -277,6 +290,28 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: C.bg,
+  },
+  missing: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 14,
+    paddingHorizontal: 24,
+  },
+  missingTitle: {
+    color: C.white,
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  missingBtn: {
+    borderRadius: 22,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+    backgroundColor: C.orange,
+  },
+  missingBtnText: {
+    color: C.white,
+    fontSize: 14,
+    fontWeight: "700",
   },
 
   // Hero

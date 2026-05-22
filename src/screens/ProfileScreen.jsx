@@ -10,8 +10,18 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
-import BottomNav from "../components/navigation/BottomNav";
+import { useAuth } from "../context/AuthContext";
+import { useOrders } from "../context/OrdersContext";
 import { C } from "../data/homeData";
+
+function MenuBarsIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none"
+      stroke={C.secondary} strokeWidth={1.8} strokeLinecap="round">
+      <Path d="M3 6h18M3 12h18M3 18h12" />
+    </Svg>
+  );
+}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 function ChevronIcon() {
@@ -122,23 +132,23 @@ function MenuRow({ icon, label, value, onPress, danger, toggle, toggleValue, onT
   );
 }
 
-// ─── Recent order row ─────────────────────────────────────────────────────────
-const RECENT_ORDERS = [
-  { id: "o1", restaurant: "Spice Route", items: "Butter Chicken, Naan", total: "₹438", date: "Today", status: "Delivered" },
-  { id: "o2", restaurant: "Basil & Thyme", items: "Truffle Pasta, Tiramisu", total: "₹798", date: "Yesterday", status: "Delivered" },
-  { id: "o3", restaurant: "Seoul Kitchen", items: "Korean BBQ Set", total: "₹699", date: "Mon", status: "Delivered" },
-];
-
 function OrderRow({ order }) {
+  const orderItems = Array.isArray(order.items)
+    ? order.items.map((item) => `${item.qty} x ${item.name}`).join(", ")
+    : order.items;
+  const orderTotal = typeof order.total === "number" ? `Rs. ${order.total}` : order.total;
+
   return (
     <View style={styles.orderRow}>
       <View style={styles.orderLeft}>
-        <Text style={styles.orderRestaurant}>{order.restaurant}</Text>
-        <Text style={styles.orderItems} numberOfLines={1}>{order.items}</Text>
-        <Text style={styles.orderDate}>{order.date}</Text>
+        <Text style={styles.orderRestaurant}>
+          {typeof order.restaurant === "string" ? order.restaurant : order.restaurant.name}
+        </Text>
+        <Text style={styles.orderItems} numberOfLines={1}>{orderItems}</Text>
+        <Text style={styles.orderDate}>{order.createdLabel || order.date}</Text>
       </View>
       <View style={styles.orderRight}>
-        <Text style={styles.orderTotal}>{order.total}</Text>
+        <Text style={styles.orderTotal}>{orderTotal}</Text>
         <View style={styles.orderStatusPill}>
           <Text style={styles.orderStatusText}>{order.status}</Text>
         </View>
@@ -149,19 +159,19 @@ function OrderRow({ order }) {
 
 export default function ProfileScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState("profile");
   const [notifEnabled, setNotifEnabled] = useState(true);
-
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    if (tab === "home") navigation.navigate("Home");
-    if (tab === "search") navigation.navigate("Discovery");
-    if (tab === "orders") navigation.navigate("Orders");
-    if (tab === "saved") navigation.navigate("Saved");
-  };
+  const { orders } = useOrders();
+  const { signOut } = useAuth();
+  const recentOrders = orders.slice(0, 3);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      {/* Drawer open button */}
+      <View style={styles.drawerRow}>
+        <Pressable style={styles.drawerBtn} onPress={() => navigation.openDrawer()}>
+          <MenuBarsIcon />
+        </Pressable>
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scroll, { paddingBottom: 100 + insets.bottom }]}
@@ -179,7 +189,7 @@ export default function ProfileScreen({ navigation }) {
 
           {/* Stats */}
           <View style={styles.statsRow}>
-            <StatPill value="24" label="Orders" />
+            <StatPill value={`${orders.length}`} label="Orders" />
             <View style={styles.statDivider} />
             <StatPill value="8" label="Saved" />
             <View style={styles.statDivider} />
@@ -191,12 +201,16 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Orders</Text>
           <View style={styles.card}>
-            {RECENT_ORDERS.map((order, i) => (
-              <View key={order.id}>
-                <OrderRow order={order} />
-                {i < RECENT_ORDERS.length - 1 && <View style={styles.rowDivider} />}
-              </View>
-            ))}
+            {recentOrders.length > 0 ? (
+              recentOrders.map((order, i) => (
+                <View key={order.id}>
+                  <OrderRow order={order} />
+                  {i < recentOrders.length - 1 && <View style={styles.rowDivider} />}
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noOrders}>Placed orders will appear here.</Text>
+            )}
           </View>
         </View>
 
@@ -235,13 +249,11 @@ export default function ProfileScreen({ navigation }) {
               icon={<LogoutIcon />}
               label="Sign Out"
               danger
-              onPress={() => navigation.navigate("Auth")}
+              onPress={signOut}
             />
           </View>
         </View>
       </ScrollView>
-
-      <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }
@@ -253,6 +265,21 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: C.bg,
+  },
+  drawerRow: {
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    paddingBottom: 4,
+  },
+  drawerBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+    alignItems: "center",
+    justifyContent: "center",
   },
   scroll: {
     paddingHorizontal: 20,
@@ -408,6 +435,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     gap: 12,
+  },
+  noOrders: {
+    color: C.secondary,
+    fontSize: 13,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
   },
   orderLeft: {
     flex: 1,

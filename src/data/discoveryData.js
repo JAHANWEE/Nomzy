@@ -30,7 +30,7 @@ export const RESTAURANTS = [
     menu: [
       { id: "m1", name: "Butter Chicken", desc: "Slow-cooked in a rich tomato-cream sauce", price: "₹349", image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&q=80" },
       { id: "m2", name: "Mutton Biryani", desc: "Dum-cooked with aged basmati and whole spices", price: "₹429", image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=80" },
-      { id: "m3", name: "Dal Makhani", desc: "Black lentils simmered overnight with butter", price: "₹229", image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80" },
+      { id: "m3", name: "Dal Makhani", desc: "Black lentils simmered overnight with butter", price: "₹229", image: require("../../assets/nomz/dal-makhani-premium.jpg") },
       { id: "m4", name: "Garlic Naan", desc: "Stone-baked with roasted garlic and herbs", price: "₹89", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80" },
       { id: "m5", name: "Seekh Kebab", desc: "Minced lamb with ginger, chilli and fresh coriander", price: "₹319", image: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&q=80" },
       { id: "m6", name: "Paneer Tikka", desc: "Chargrilled cottage cheese with bell peppers", price: "₹279", image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80" },

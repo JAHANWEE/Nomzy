@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     ScrollView,
     StyleSheet,
@@ -11,22 +10,12 @@ import HomeHeader from "../components/home/HomeHeader";
 import NearbyRestaurants from "../components/home/NearbyRestaurants";
 import PopularRestaurants from "../components/home/PopularRestaurants";
 import RecommendedSection from "../components/home/RecommendedSection";
-import BottomNav from "../components/navigation/BottomNav";
 import { C } from "../data/homeData";
 
 const NAV_HEIGHT = 80;
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState("home");
-
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    if (tab === "search") navigation.navigate("Discovery");
-    if (tab === "orders") navigation.navigate("Orders");
-    if (tab === "saved") navigation.navigate("Saved");
-    if (tab === "profile") navigation.navigate("Profile");
-  };
 
   return (
     <View style={styles.root}>
@@ -59,8 +48,6 @@ export default function HomeScreen({ navigation }) {
           <NearbyRestaurants navigation={navigation} />
         </View>
       </ScrollView>
-
-      <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }

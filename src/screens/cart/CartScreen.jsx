@@ -30,7 +30,11 @@ function parsePrice(value) {
 function CartLine({ dish, qty, onAdd, onRemove }) {
   return (
     <View style={styles.line}>
-      <Image source={{ uri: dish.image }} style={styles.lineImage} resizeMode="cover" />
+      <Image
+        source={typeof dish.image === "string" ? { uri: dish.image } : dish.image}
+        style={styles.lineImage}
+        resizeMode="cover"
+      />
       <View style={styles.lineInfo}>
         <Text style={styles.lineName} numberOfLines={1}>{dish.name}</Text>
         <Text style={styles.lineDesc} numberOfLines={1}>{dish.desc}</Text>
@@ -117,7 +121,7 @@ export default function CartScreen({ navigation }) {
                 return;
               }
 
-              navigation.navigate("Discovery");
+              navigation.getParent()?.navigate("Search");
             }}
           >
             <Text style={styles.emptyBtnText}>Browse Menu</Text>

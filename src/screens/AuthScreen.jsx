@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Animated,
+    Dimensions,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import LockIcon from "../components/icons/LockIcon";
 import MailIcon from "../components/icons/MailIcon";
 import UserIcon from "../components/icons/UserIcon";
+import { useAuth } from "../context/AuthContext";
 
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
@@ -200,6 +201,7 @@ function GoogleButton({ onPress }) {
 export default function AuthScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [mode, setMode] = useState("login"); // "login" | "signup"
+  const { signIn } = useAuth();
 
   // Animation refs
   const heroOpacity  = useRef(new Animated.Value(0)).current;
@@ -251,6 +253,10 @@ export default function AuthScreen({ navigation }) {
   };
 
   const isLogin = mode === "login";
+  const handleAuth = async () => {
+    await signIn();
+    // GuardedNavigation re-renders automatically — no navigate needed
+  };
 
   return (
     <View style={[styles.root, { backgroundColor: C.bg }]}>
@@ -340,7 +346,7 @@ export default function AuthScreen({ navigation }) {
             <View style={styles.ctaRow}>
               <PillButton
                 label={isLogin ? "Sign In" : "Create Account"}
-                onPress={() => navigation.navigate("Home")}
+                onPress={handleAuth}
               />
             </View>
 
@@ -352,7 +358,7 @@ export default function AuthScreen({ navigation }) {
             </View>
 
             {/* Google */}
-            <GoogleButton onPress={() => {}} />
+            <GoogleButton onPress={handleAuth} />
 
             {/* Mode toggle */}
             <View style={styles.toggleRow}>

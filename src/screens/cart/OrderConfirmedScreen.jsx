@@ -66,10 +66,16 @@ export default function OrderConfirmedScreen({ route, navigation }) {
       </View>
 
       <View style={styles.actions}>
-        <Pressable style={styles.ordersBtn} onPress={() => navigation.navigate("Orders")}>
+        <Pressable
+          style={styles.ordersBtn}
+          onPress={() => navigation.getParent()?.navigate("Orders")}
+        >
           <Text style={styles.ordersBtnText}>View Orders</Text>
         </Pressable>
-        <Pressable style={styles.homeBtn} onPress={() => navigation.navigate("Home")}>
+        <Pressable
+          style={styles.homeBtn}
+          onPress={() => navigation.reset({ index: 0, routes: [{ name: "Home" }] })}
+        >
           <Text style={styles.homeBtnText}>Back to Home</Text>
         </Pressable>
       </View>
