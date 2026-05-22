@@ -47,23 +47,25 @@ function MenuItem({ dish }) {
       </View>
 
       <View style={styles.menuItemRight}>
-        <Image source={{ uri: dish.image }} style={styles.menuItemImage} resizeMode="cover" />
+        <View style={styles.menuItemImageWrap}>
+          <Image source={{ uri: dish.image }} style={styles.menuItemImage} resizeMode="cover" />
 
-        {qty === 0 ? (
-          <Pressable style={styles.addBtn} onPress={() => setQty(1)}>
-            <PlusIcon />
-          </Pressable>
-        ) : (
-          <View style={styles.qtyControl}>
-            <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => Math.max(0, q - 1))}>
-              <Text style={styles.qtyBtnText}>−</Text>
+          {qty === 0 ? (
+            <Pressable style={styles.addBtn} onPress={() => setQty(1)}>
+              <PlusIcon />
             </Pressable>
-            <Text style={styles.qtyText}>{qty}</Text>
-            <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => q + 1)}>
-              <Text style={styles.qtyBtnText}>+</Text>
-            </Pressable>
-          </View>
-        )}
+          ) : (
+            <View style={styles.qtyControl}>
+              <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => Math.max(0, q - 1))}>
+                <Text style={styles.qtyBtnText}>−</Text>
+              </Pressable>
+              <Text style={styles.qtyText}>{qty}</Text>
+              <Pressable style={styles.qtyBtn} onPress={() => setQty((q) => q + 1)}>
+                <Text style={styles.qtyBtnText}>+</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -269,7 +271,10 @@ const styles = StyleSheet.create({
   },
   menuItemRight: {
     alignItems: "center",
-    gap: 8,
+  },
+  menuItemImageWrap: {
+    width: 90,
+    height: 80,
   },
   menuItemImage: {
     width: 90,
@@ -278,6 +283,9 @@ const styles = StyleSheet.create({
     backgroundColor: C.card,
   },
   addBtn: {
+    position: "absolute",
+    bottom: -10,
+    right: -10,
     width: 34,
     height: 34,
     borderRadius: 17,
@@ -291,6 +299,9 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   qtyControl: {
+    position: "absolute",
+    bottom: -14,
+    right: -14,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: C.card,

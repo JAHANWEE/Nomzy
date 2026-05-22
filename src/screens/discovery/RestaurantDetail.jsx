@@ -218,9 +218,9 @@ export default function RestaurantDetail({ route, navigation }) {
               ))}
             </ScrollView>
 
-            {/* Menu item cards */}
+            {/* Menu item cards — first 4 only */}
             <View style={styles.menuList}>
-              {restaurant.menu.map((dish) => (
+              {restaurant.menu.slice(0, 4).map((dish) => (
                 <MenuItemCard
                   key={dish.id}
                   dish={dish}
